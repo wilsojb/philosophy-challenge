@@ -15,77 +15,89 @@ My stats differ from the main article, which is most likely due to slightly diff
 
 Best to start with a fresh virtual environment,
 
-  $ virtualenv env
-  New python executable in env/bin/python
-  Installing setuptools, pip, wheel...done.
+```bash
+$ virtualenv env
+New python executable in env/bin/python
+Installing setuptools, pip, wheel...done.
+```
 
 Don't forget activate and then install all dependencies,
 
-  $ source env/bin/activate
-  (env)$ pip install -r requirements.txt
+```bash
+$ source env/bin/activate
+(env)$ pip install -r requirements.txt
+```
 
 Make the scripts executable and take a look at the help menu,
 
-  (env)$ chmod +x results.py crawler.py
-  (env)$ ./crawler.py -h
-  usage: crawler.py [-h] -u URL [-l LIMIT] [-n RUNS] [-m MONGO] [-i]
+```bash
+(env)$ chmod +x results.py crawler.py
+(env)$ ./crawler.py -h
+usage: crawler.py [-h] -u URL [-l LIMIT] [-n RUNS] [-m MONGO] [-i]
 
-  Wikipedia philosophy crawler
+Wikipedia philosophy crawler
 
-  optional arguments:
-    -h, --help  show this help message and exit
-    -u URL      the starting url
-    -l LIMIT    page depth limit
-    -n RUNS     run <n> times
-    -m MONGO    mongo credentials
-    -i          ignore caching
+optional arguments:
+  -h, --help  show this help message and exit
+  -u URL      the starting url
+  -l LIMIT    page depth limit
+  -n RUNS     run <n> times
+  -m MONGO    mongo credentials
+  -i          ignore caching
+```
 
 #### Crawler
 
 The bulk of the code is in crawler.py. To see the basic algorithm at work, run the following:
 
-  (env)$ ./crawler.py -u Art -i
-  { 'errors': False,
-    'message': 'Found in cache',
-    'path_link_limit': 40,
-    'reaches_philosophy': True,
-    'starting_url': 'Art',
-    'urls': ['Art',
-            'Human_behavior',
-            'Motion_(physics)',
-            'Physics',
-            'Natural_science',
-            'Science',
-            'Knowledge',
-            'Awareness',
-            'Conscious',
-            'Quality_(philosophy)',
-            'Philosophy']}
+```bash
+(env)$ ./crawler.py -u Art -i
+{ 'errors': False,
+  'message': 'Found in cache',
+  'path_link_limit': 40,
+  'reaches_philosophy': True,
+  'starting_url': 'Art',
+  'urls': ['Art',
+          'Human_behavior',
+          'Motion_(physics)',
+          'Physics',
+          'Natural_science',
+          'Science',
+          'Knowledge',
+          'Awareness',
+          'Conscious',
+          'Quality_(philosophy)',
+          'Philosophy']}
+```
 
 Significant speed improvements can be made by utilizing previously successful urls. Remove the '-i' to see this at work:
 
-  (env)$ ./crawler.py -u Art
-  Running with 1448 successful_urls
-  { 'errors': False,
-    'message': 'Found in cache',
-    'path_link_limit': 40,
-    'reaches_philosophy': True,
-    'starting_url': 'Art',
-    'urls': [u'Art',
-            u'Human_behavior',
-            u'Motion_(physics)',
-            u'Physics',
-            u'Natural_science',
-            u'Science',
-            u'Knowledge',
-            u'Awareness',
-            u'Conscious',
-            u'Quality_(philosophy)',
-            u'Philosophy']}
+```bash
+(env)$ ./crawler.py -u Art
+Running with 1448 successful_urls
+{ 'errors': False,
+  'message': 'Found in cache',
+  'path_link_limit': 40,
+  'reaches_philosophy': True,
+  'starting_url': 'Art',
+  'urls': [u'Art',
+          u'Human_behavior',
+          u'Motion_(physics)',
+          u'Physics',
+          u'Natural_science',
+          u'Science',
+          u'Knowledge',
+          u'Awareness',
+          u'Conscious',
+          u'Quality_(philosophy)',
+          u'Philosophy']}
+```
 
 I've stored previously successful urls to a (free!) [MongoDB](https://mlab.com) instance. In order to generate the data stored there, I ran the following a few times between coffee breaks:
 
-  (env)$ ./crawler.py -u Special:Random -m <admin_username>:<admin_password> -n 50
+```bash
+(env)$ ./crawler.py -u Special:Random -m <admin_username>:<admin_password> -n 50
+```
 
 You will need to set up your own MongoDB instance in order to cache previous successful urls or use results.py to see the aggregate results of the challenge. I recommend setting up two users: one with write permissions and one read-only user. You can change the <username>:<password> from the command like with "-m". This defaults to "read:read" when not specified (which was my "read-only" username/password for this exercise).
 
@@ -94,6 +106,7 @@ You will need to set up your own MongoDB instance in order to cache previous suc
 
 The data stored on the mongo instance should be all that's necessary to analyze the results. So I wrote a separate, smaller script to do just that:
 
+```bash
 (env)$ ./results.py
 Total number of pages: 499
 
@@ -104,3 +117,4 @@ Size:  470
 Mean: 14.32
 Median: 14
 Std: 4.04
+```
