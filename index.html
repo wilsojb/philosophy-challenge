@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Wikipedia Philosophy Challenge by wilsojb</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Wikipedia Philosophy Challenge</h1>
+      <h2 class="project-tagline">The &quot;Getting to Philosophy&quot; Challenge with Python and MongoDB</h2>
+      <a href="https://github.com/wilsojb/philosophy-challenge" class="btn">View on GitHub</a>
+      <a href="https://github.com/wilsojb/philosophy-challenge/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/wilsojb/philosophy-challenge/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h4>
+<a id="overview-the-getting-to-philosophy-challenge" class="anchor" href="#overview-the-getting-to-philosophy-challenge" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overview: The "Getting to Philosophy" Challenge</h4>
+
+<p>Check out the wikipedia page on this: <a href="https://en.wikipedia.org/wiki/Wikipedia:Getting_to_Philosophy">https://en.wikipedia.org/wiki/Wikipedia:Getting_to_Philosophy</a></p>
+
+<blockquote>
+<p>Clicking on the first link in the main text of a Wikipedia article, and then repeating the process for subsequent articles, usually eventually gets you to the Philosophy article. As of May 26, 2011, 94.52% of all articles in Wikipedia lead eventually to the article Philosophy. The remaining 100,000 (approx.) links to an article with no wikilinks or with links to pages that do not exist, or get stuck in loops (all three are equally probable). The median link chain length to reach philosophy is 23.</p>
+</blockquote>
+
+<p>If you go to any page on Wikipedia and keep clicking on the first link of the page (ignoring links in parenthesis and the ones in italic), you will usually eventually reach the Philosophy page. This is a python implementation of the challenge that uses <a href="https://mlab.com">MongoDB</a> to cache previously visited pages in order to make aggregating results easier and to reduce the overall number of requests to Wikipedia.</p>
+
+<p>My stats differ from the main article, which is most likely due to slightly different assumptions about what the "first link" on the page should be. (E.g. some implementations ignore external links, etc.). As of this writing, this implementation finds 94.2% articles lead to the Philosophy page with a median link chain of 14.</p>
+
+<h4>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h4>
+
+<p>Best to start with a fresh virtual environment,</p>
+
+<div class="highlight highlight-source-shell"><pre>$ virtualenv env
+New python executable <span class="pl-k">in</span> env/bin/python
+Installing setuptools, pip, wheel...<span class="pl-k">done</span>.</pre></div>
+
+<p>Don't forget activate and then install all dependencies,</p>
+
+<div class="highlight highlight-source-shell"><pre>$ <span class="pl-c1">source</span> env/bin/activate
+(env)$ pip install -r requirements.txt</pre></div>
+
+<p>Make the scripts executable and take a look at the help menu,</p>
+
+<div class="highlight highlight-source-shell"><pre>(env)$ chmod +x results.py crawler.py
+(env)$ ./crawler.py -h
+usage: crawler.py [-h] -u URL [-l LIMIT] [-n RUNS] [-m MONGO] [-i]
+
+Wikipedia philosophy crawler
+
+optional arguments:
+  -h, --help  show this <span class="pl-c1">help</span> message and <span class="pl-c1">exit</span>
+  -u URL      the starting url
+  -l LIMIT    page depth limit
+  -n RUNS     run <span class="pl-k">&lt;</span>n<span class="pl-k">&gt;</span> <span class="pl-c1">times</span>
+  -m MONGO    mongo credentials
+  -i          ignore caching</pre></div>
+
+<h4>
+<a id="crawler" class="anchor" href="#crawler" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Crawler</h4>
+
+<p>The bulk of the code is in crawler.py. To see the basic algorithm at work, run the following:</p>
+
+<div class="highlight highlight-source-shell"><pre>(env)$ ./crawler.py -u Art -i
+{ <span class="pl-s"><span class="pl-pds">'</span>errors<span class="pl-pds">'</span></span>: False,
+  <span class="pl-s"><span class="pl-pds">'</span>message<span class="pl-pds">'</span></span>: <span class="pl-s"><span class="pl-pds">'</span>Found in cache<span class="pl-pds">'</span></span>,
+  <span class="pl-s"><span class="pl-pds">'</span>path_link_limit<span class="pl-pds">'</span></span>: 40,
+  <span class="pl-s"><span class="pl-pds">'</span>reaches_philosophy<span class="pl-pds">'</span></span>: True,
+  <span class="pl-s"><span class="pl-pds">'</span>starting_url<span class="pl-pds">'</span></span>: <span class="pl-s"><span class="pl-pds">'</span>Art<span class="pl-pds">'</span></span>,
+  <span class="pl-s"><span class="pl-pds">'</span>urls<span class="pl-pds">'</span></span>: [<span class="pl-s"><span class="pl-pds">'</span>Art<span class="pl-pds">'</span></span>,
+          <span class="pl-s"><span class="pl-pds">'</span>Human_behavior<span class="pl-pds">'</span></span>,
+          <span class="pl-s"><span class="pl-pds">'</span>Motion_(physics)<span class="pl-pds">'</span></span>,
+          <span class="pl-s"><span class="pl-pds">'</span>Physics<span class="pl-pds">'</span></span>,
+          <span class="pl-s"><span class="pl-pds">'</span>Natural_science<span class="pl-pds">'</span></span>,
+          <span class="pl-s"><span class="pl-pds">'</span>Science<span class="pl-pds">'</span></span>,
+          <span class="pl-s"><span class="pl-pds">'</span>Knowledge<span class="pl-pds">'</span></span>,
+          <span class="pl-s"><span class="pl-pds">'</span>Awareness<span class="pl-pds">'</span></span>,
+          <span class="pl-s"><span class="pl-pds">'</span>Conscious<span class="pl-pds">'</span></span>,
+          <span class="pl-s"><span class="pl-pds">'</span>Quality_(philosophy)<span class="pl-pds">'</span></span>,
+          <span class="pl-s"><span class="pl-pds">'</span>Philosophy<span class="pl-pds">'</span></span>]}</pre></div>
+
+<p>Significant speed improvements can be made by utilizing previously successful urls. Remove the '-i' to see this at work:</p>
+
+<div class="highlight highlight-source-shell"><pre>(env)$ ./crawler.py -u Art
+Running with 1448 successful_urls
+{ <span class="pl-s"><span class="pl-pds">'</span>errors<span class="pl-pds">'</span></span>: False,
+  <span class="pl-s"><span class="pl-pds">'</span>message<span class="pl-pds">'</span></span>: <span class="pl-s"><span class="pl-pds">'</span>Found in cache<span class="pl-pds">'</span></span>,
+  <span class="pl-s"><span class="pl-pds">'</span>path_link_limit<span class="pl-pds">'</span></span>: 40,
+  <span class="pl-s"><span class="pl-pds">'</span>reaches_philosophy<span class="pl-pds">'</span></span>: True,
+  <span class="pl-s"><span class="pl-pds">'</span>starting_url<span class="pl-pds">'</span></span>: <span class="pl-s"><span class="pl-pds">'</span>Art<span class="pl-pds">'</span></span>,
+  <span class="pl-s"><span class="pl-pds">'</span>urls<span class="pl-pds">'</span></span>: [u<span class="pl-s"><span class="pl-pds">'</span>Art<span class="pl-pds">'</span></span>,
+          u<span class="pl-s"><span class="pl-pds">'</span>Human_behavior<span class="pl-pds">'</span></span>,
+          u<span class="pl-s"><span class="pl-pds">'</span>Motion_(physics)<span class="pl-pds">'</span></span>,
+          u<span class="pl-s"><span class="pl-pds">'</span>Physics<span class="pl-pds">'</span></span>,
+          u<span class="pl-s"><span class="pl-pds">'</span>Natural_science<span class="pl-pds">'</span></span>,
+          u<span class="pl-s"><span class="pl-pds">'</span>Science<span class="pl-pds">'</span></span>,
+          u<span class="pl-s"><span class="pl-pds">'</span>Knowledge<span class="pl-pds">'</span></span>,
+          u<span class="pl-s"><span class="pl-pds">'</span>Awareness<span class="pl-pds">'</span></span>,
+          u<span class="pl-s"><span class="pl-pds">'</span>Conscious<span class="pl-pds">'</span></span>,
+          u<span class="pl-s"><span class="pl-pds">'</span>Quality_(philosophy)<span class="pl-pds">'</span></span>,
+          u<span class="pl-s"><span class="pl-pds">'</span>Philosophy<span class="pl-pds">'</span></span>]}</pre></div>
+
+<p>I've stored previously successful urls to a (free!) <a href="https://mlab.com">MongoDB</a> instance. In order to generate the data stored there, I ran the following a few times between coffee breaks:</p>
+
+<div class="highlight highlight-source-shell"><pre>(env)$ ./crawler.py -u Special:Random -m <span class="pl-k">&lt;</span>admin_username<span class="pl-k">&gt;</span>:<span class="pl-k">&lt;</span>admin_password<span class="pl-k">&gt;</span> -n 50</pre></div>
+
+<p>You will need to set up your own MongoDB instance in order to cache previous successful urls or use results.py to see the aggregate results of the challenge. I recommend setting up two users: one with write permissions and one read-only user. You can change the : from the command like with "-m". This defaults to "read:read" when not specified (which was my "read-only" username/password for this exercise).</p>
+
+<h4>
+<a id="results" class="anchor" href="#results" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Results</h4>
+
+<p>The data stored on the mongo instance should be all that's necessary to analyze the results. So I wrote a separate, smaller script to do just that:</p>
+
+<div class="highlight highlight-source-shell"><pre>(env)$ ./results.py
+Total number of pages: 499
+
+Percentage of pages that often lead to philosophy<span class="pl-k">?</span> 94.2%
+
+What is the distribution of path lengths, discarding those paths that never reach the Philosophy page<span class="pl-k">?</span>
+Size:  470
+Mean: 14.32
+Median: 14
+Std: 4.04</pre></div>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/wilsojb/philosophy-challenge">Wikipedia Philosophy Challenge</a> is maintained by <a href="https://github.com/wilsojb">wilsojb</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
