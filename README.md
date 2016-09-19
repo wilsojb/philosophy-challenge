@@ -1,12 +1,7 @@
-
-
 #### Overview: The "Getting to Philosophy" Challenge
-
-Check out the wikipedia page on this: https://en.wikipedia.org/wiki/Wikipedia:Getting_to_Philosophy
+If you go to any page on Wikipedia and keep clicking on the first link of the page (ignoring links in parenthesis and the ones in italic), you will usually eventually reach the Philosophy page. This is a python implementation of the challenge that uses [MongoDB](https://mlab.com) to cache previously visited pages in order to make aggregating results easier and to reduce the overall number of requests to Wikipedia. From [Wikepedia](https://en.wikipedia.org/wiki/Wikipedia:Getting_to_Philosophy),
 
 > Clicking on the first link in the main text of a Wikipedia article, and then repeating the process for subsequent articles, usually eventually gets you to the Philosophy article. As of May 26, 2011, 94.52% of all articles in Wikipedia lead eventually to the article Philosophy. The remaining 100,000 (approx.) links to an article with no wikilinks or with links to pages that do not exist, or get stuck in loops (all three are equally probable). The median link chain length to reach philosophy is 23.
-
-If you go to any page on Wikipedia and keep clicking on the first link of the page (ignoring links in parenthesis and the ones in italic), you will usually eventually reach the Philosophy page. This is a python implementation of the challenge that uses [MongoDB](https://mlab.com) to cache previously visited pages in order to make aggregating results easier and to reduce the overall number of requests to Wikipedia.
 
 My stats differ from the main article, which is most likely due to slightly different assumptions about what the "first link" on the page should be. (E.g. some implementations ignore external links, etc.). As of this writing, this implementation finds 94.2% articles lead to the Philosophy page with a median link chain of 14.
 
@@ -118,3 +113,11 @@ Mean: 14.32
 Median: 14
 Std: 4.04
 ```
+
+## Credit
++ http://www.gyford.com/phil/writing/2015/03/25/wikipedia-parsing.php
++ http://matpalm.com/blog/2011/08/13/wikipedia-philosophy/
++ https://en.wikipedia.org/wiki/Wikipedia:Getting_to_Philosophy
+
+## Contacts
+ * <wilsojb@gmail.com>
